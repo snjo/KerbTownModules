@@ -70,7 +70,7 @@ namespace KerbTownModules
         public void createGUIWindow()
         {
             elementHeading = new PopupElement("Choose tank to fill");
-            popup = new GUIPopup("FSHPgasPump", moduleID, GUIwindowID.gasPump + moduleID, windowRect, fuelGUIName + " Fuel Pump", elementHeading);
+            popup = new GUIPopup(moduleID, GUIwindowID.gasPump + moduleID, windowRect, fuelGUIName + " Fuel Pump", elementHeading);
             popup.hideMenuEvent = OnPopupHide;
         }
 
@@ -193,7 +193,7 @@ namespace KerbTownModules
         {
             if (!HighLogic.LoadedSceneIsFlight)
                 return;
-            Debug.Log("FSHPgasPump: Start()");
+            Debug.Log("GasPump: Start()");
             triggerCollider = transform.Find(triggerColliderName);
             if (triggerCollider != null)
             {
