@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using UnityEngine;
 using KerbTownQuest;
 using KerbTownQuest.GUI;
+using Kerbtown;
 
 namespace KerbTownModules
 {
-    public class GasPump : MonoBehaviour
+    public class GasPump : StaticObjectModule
     {        
         public Vessel targetVessel;
         public bool vesselInRange;
@@ -252,6 +253,6 @@ namespace KerbTownModules
                         popup.popup();
                 }
             }
-        }
+        }        
     }
 }

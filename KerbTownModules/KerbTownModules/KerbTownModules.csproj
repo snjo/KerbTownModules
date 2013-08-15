@@ -36,6 +36,9 @@
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\..\..\..\Spill\KSP_win-0-21-0\KSP_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
+    <Reference Include="Kerbtown">
+      <HintPath>..\..\..\..\Spill\KSP_win-0-21-0\GameData\Hubs\Plugins\Kerbtown.dll</HintPath>
+    </Reference>
     <Reference Include="KerbTownQuest">
       <HintPath>..\..\..\KerbTownQuest\KerbTownQuest\KerbTownQuest\bin\Debug\KerbTownQuest.dll</HintPath>
     </Reference>
