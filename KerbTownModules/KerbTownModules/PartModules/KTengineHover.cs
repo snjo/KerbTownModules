@@ -15,36 +15,60 @@ public class KTengineHover : PartModule
     public bool hoverActive = false;
     [KSPField]
     public float thrustSmooth = 0.1f;
+    [KSPField(isPersistant = true)]
+    public float maxThrust = 0f;
+    [KSPField(isPersistant = true)]
+    public bool maxThrustFetched = false;
 
 
-    private ModuleEngines engine;
-    private float maxThrust = 0f;
+    private ModuleEngines engine;    
     private float currentThrustNormalized = 0f;
     private float targetThrustNormalized = 0f;
 
     [KSPEvent(guiName = "Toggle Hover")]
     public void toggleHoverEvent()
     {
-        hoverActive = !hoverActive;
-        verticalSpeed = 0f;
+        if (engine != null)
+        {
+            hoverActive = !hoverActive;
+            verticalSpeed = 0f;
+            if (hoverActive)
+            {
+                ScreenMessages.PostScreenMessage(new ScreenMessage("Hover On", 1f, ScreenMessageStyle.UPPER_CENTER));
+            }
+            else
+            {
+                engine.maxThrust = maxThrust;
+                ScreenMessages.PostScreenMessage(new ScreenMessage("Hover Off", 1f, ScreenMessageStyle.UPPER_CENTER));
+            }
+            
+            
+        }
     }
 
     [KSPAction("Toggle Hover")]
     public void toggleHoverAction(KSPActionParam param)
     {
-        toggleHoverEvent();
+        toggleHoverEvent();        
     }
 
     [KSPAction("Increase vSpeed")]
     public void increaseVerticalSpeed(KSPActionParam param)
     {
         verticalSpeed += verticalSpeedIncrements;
+        printSpeed();
     }
 
     [KSPAction("Decrease vSpeed")]
     public void decreaseVerticalSpeed(KSPActionParam param)
     {
         verticalSpeed -= verticalSpeedIncrements;
+        printSpeed();
+    }
+
+    public void printSpeed()
+    {
+        ScreenMessages.PostScreenMessage(new ScreenMessage("Hover Climb Rate: " + verticalSpeed, 1f, ScreenMessageStyle.UPPER_CENTER));
     }
 
     public override void OnStart(PartModule.StartState state)
@@ -52,11 +76,19 @@ public class KTengineHover : PartModule
         Debug.Log("KTengineHover OnStart");
         base.OnStart(state);
         if (HighLogic.LoadedSceneIsFlight)
-        {
-            engine = part.FindModelComponent<ModuleEngines>();
+        {            
+            engine = part.Modules.OfType<ModuleEngines>().FirstOrDefault();
             if (engine != null)
             {
-                maxThrust = engine.maxThrust;
+                if (maxThrustFetched && maxThrust > 0f)
+                {
+                    engine.maxThrust = maxThrust;
+                }
+                else
+                {
+                    maxThrust = engine.maxThrust;
+                    maxThrustFetched = true;
+                }                
             }
         }
     }
@@ -68,14 +100,47 @@ public class KTengineHover : PartModule
         {
             if (hoverActive)
             {
-                if (vessel.verticalSpeed > 0f)
+                if (vessel.verticalSpeed >= verticalSpeed)
                     targetThrustNormalized = 0f;
-                else if (vessel.verticalSpeed < 0f)
+                else if (vessel.verticalSpeed < verticalSpeed)
                     targetThrustNormalized = 1f;
 
                 currentThrustNormalized = Mathf.Lerp(currentThrustNormalized, targetThrustNormalized, thrustSmooth);
 
-                engine.maxThrust = maxThrust * currentThrustNormalized;
+                float newThrust = maxThrust * currentThrustNormalized;
+                if (newThrust <= 0f) newThrust = 0.001f;
+                if (engine != null)
+                {
+                    Debug.Log("newThrust is " + newThrust);
+                    engine.maxThrust = newThrust;
+                }
+                else
+                {
+                    Debug.Log("engine is null");
+                }
+            }
+        }
+    }
+
+    public override void OnUpdate()
+    {
+        base.OnUpdate();
+        if (HighLogic.LoadedSceneIsFlight && vessel == FlightGlobals.ActiveVessel)
+        {
+            if (Input.GetKeyDown(KeyCode.PageUp))
+            {
+                verticalSpeed += verticalSpeedIncrements;
+                printSpeed();
+            }
+            if (Input.GetKeyDown(KeyCode.PageDown))
+            {
+                verticalSpeed -= verticalSpeedIncrements;
+                printSpeed();
+            }
+            if (Input.GetKeyDown(KeyCode.Home))
+            {
+                verticalSpeed = 0f;
+                printSpeed();
             }
         }
     }

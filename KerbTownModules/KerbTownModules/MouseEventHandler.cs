@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace KerbTownModules
-{
-    public delegate void FSHPgenericDelegate();
-
+{    
     public class MouseEventHandler : MonoBehaviour
     {
+        public delegate void FSHPgenericDelegate();
         public FSHPgenericDelegate mouseDownEvent;
 
         public void OnMouseDown()
