@@ -83,7 +83,8 @@ namespace KerbTownModules
             {
                 PopupElement element = new PopupElement(tank.fuelGUIName, new PopupButton("Fill", buttonWidth, initiateFillTank, i));
                 element.titleSize = fuelTextSize.x;
-                popup.elementList.Add(element);
+                popup.sections.Add(new Section());
+                popup.sections[0].elements.Add(element);
                 element.buttons.Add(new PopupButton("Stop", buttonWidth, stopTransfer));
                 element.buttons.Add(new PopupButton("Drain", buttonWidth, initiateDrainTank, i));
                 i++;
@@ -92,11 +93,11 @@ namespace KerbTownModules
 
         public void updateGUIFuelElements()
         {
-            for (int i = 0; i < popup.elementList.Count-1; i++) // -1 on the count because of the elementHeading Line
+            for (int i = 0; i < popup.sections[0].elements.Count-1; i++) // -1 on the count because of the elementHeading Line
             {
                 if (tankList.Count > i)
                 {
-                    popup.elementList[i + 1].titleText = tankList[i].part.name + " (" + (int)tankList[i].partResource.amount + " / " + (int)tankList[i].partResource.maxAmount + ")";
+                    popup.sections[0].elements[i + 1].titleText = tankList[i].part.name + " (" + (int)tankList[i].partResource.amount + " / " + (int)tankList[i].partResource.maxAmount + ")";
                 }
             }
         }
