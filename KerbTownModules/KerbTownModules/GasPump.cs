@@ -10,7 +10,7 @@ using Kerbtown;
 
 namespace KerbTownModules
 {
-    public class GasPump : StaticObjectModule
+    public class GasPump : MonoBehaviour
     {        
         public Vessel targetVessel;
         public bool vesselInRange;

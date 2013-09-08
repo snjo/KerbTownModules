@@ -54,10 +54,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="GasPump.cs" />
-    <None Include="MouseEventHandler.cs" />
+    <Compile Include="GasPump.cs" />
+    <Compile Include="MouseEventHandler.cs" />
     <Compile Include="PartModules\KTengineHover.cs" />
-    <None Include="Tank.cs" />
+    <Compile Include="Tank.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

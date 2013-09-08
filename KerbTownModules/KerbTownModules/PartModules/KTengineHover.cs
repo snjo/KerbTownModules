@@ -24,6 +24,7 @@ public class KTengineHover : PartModule
     private ModuleEngines engine;    
     private float currentThrustNormalized = 0f;
     private float targetThrustNormalized = 0f;
+    private float minThrust = 0f;    
 
     [KSPEvent(guiName = "Toggle Hover")]
     public void toggleHoverEvent()
@@ -88,7 +89,8 @@ public class KTengineHover : PartModule
                 {
                     maxThrust = engine.maxThrust;
                     maxThrustFetched = true;
-                }                
+                }
+                minThrust = engine.minThrust;
             }
         }
     }
@@ -108,7 +110,7 @@ public class KTengineHover : PartModule
                 currentThrustNormalized = Mathf.Lerp(currentThrustNormalized, targetThrustNormalized, thrustSmooth);
 
                 float newThrust = maxThrust * currentThrustNormalized;
-                if (newThrust <= 0f) newThrust = 0.001f;
+                if (newThrust <= minThrust) newThrust = minThrust + 0.001f;
                 if (engine != null)
                 {
                     Debug.Log("newThrust is " + newThrust);
