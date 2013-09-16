@@ -19,6 +19,8 @@ public class KTengineHover : PartModule
     public float maxThrust = 0f;
     [KSPField(isPersistant = true)]
     public bool maxThrustFetched = false;
+    [KSPField]
+    public bool useHardCodedButtons = true;
 
 
     private ModuleEngines engine;    
@@ -113,7 +115,7 @@ public class KTengineHover : PartModule
                 if (newThrust <= minThrust) newThrust = minThrust + 0.001f;
                 if (engine != null)
                 {
-                    Debug.Log("newThrust is " + newThrust);
+                    //Debug.Log("newThrust is " + newThrust);
                     engine.maxThrust = newThrust;
                 }
                 else
@@ -129,20 +131,27 @@ public class KTengineHover : PartModule
         base.OnUpdate();
         if (HighLogic.LoadedSceneIsFlight && vessel == FlightGlobals.ActiveVessel)
         {
-            if (Input.GetKeyDown(KeyCode.PageUp))
+            if (useHardCodedButtons)
             {
-                verticalSpeed += verticalSpeedIncrements;
-                printSpeed();
-            }
-            if (Input.GetKeyDown(KeyCode.PageDown))
-            {
-                verticalSpeed -= verticalSpeedIncrements;
-                printSpeed();
-            }
-            if (Input.GetKeyDown(KeyCode.Home))
-            {
-                verticalSpeed = 0f;
-                printSpeed();
+                if (Input.GetKeyDown(KeyCode.PageUp))
+                {
+                    verticalSpeed += verticalSpeedIncrements;
+                    printSpeed();
+                }
+                if (Input.GetKeyDown(KeyCode.PageDown))
+                {
+                    verticalSpeed -= verticalSpeedIncrements;
+                    printSpeed();
+                }
+                if (Input.GetKeyDown(KeyCode.Home))
+                {
+                    verticalSpeed = 0f;
+                    printSpeed();
+                }
+                if (Input.GetKeyDown(KeyCode.End))
+                {
+                    toggleHoverEvent();
+                }
             }
         }
     }

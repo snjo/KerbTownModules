@@ -57,6 +57,7 @@
     <Compile Include="GasPump.cs" />
     <Compile Include="MouseEventHandler.cs" />
     <Compile Include="PartModules\KTengineHover.cs" />
+    <Compile Include="PartModules\KTvelocityController.cs" />
     <Compile Include="Tank.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
