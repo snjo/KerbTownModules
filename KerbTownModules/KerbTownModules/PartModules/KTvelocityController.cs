@@ -30,7 +30,7 @@ class KTvelocityController : PartModule
     [KSPField]
     public string thrustKey = "delete";
     [KSPField]
-    public float minVelocityToActivate = 0.0f;
+    public float minVelocityToActivate = 0.1f;
 
     public bool controllerActive = false;
 
@@ -39,6 +39,7 @@ class KTvelocityController : PartModule
     private Vector3 velocityDirection = new Vector3(0f, 0f, 0f);
     private KerbTownModules.KTparticleFX[] particleFX;
     private Texture2D particleTexture;
+    private Vector3 finalThrust = new Vector3(0f, 0f, 0f);
 
     private float defaultEmitterMinEmission = 120f;
     private float defaultEmitterMaxEmission = 160f;
@@ -106,25 +107,39 @@ class KTvelocityController : PartModule
             bool doThrust = Input.GetKey(thrustKey);
 
             foreach (Transform t in transformArray)
-            {                                
+            {
                 float thrustUsed = updateThruster(i, doThrust, t);
-                consumeResource(thrustUsed * maxThrust);
+                bool resourceReceived = consumeResource(thrustUsed * maxThrust);
+                if (!resourceReceived)
+                    thrustUsed = 0f;
+                if (thrustUsed > 0f)
+                    part.gameObject.rigidbody.AddForceAtPosition(finalThrust, t.transform.position);                
+                if (useFX)
+                {
+                    particleFX[i].pEmitter.minEmission = defaultEmitterMinEmission * thrustUsed;
+                    particleFX[i].pEmitter.maxEmission = defaultEmitterMaxEmission * thrustUsed;
+                }
                 i++;
             }
         }
     }
 
-    private void consumeResource(float modifier)
-    {
-        if (modifier > 0f && !CheatOptions.InfiniteRCS)
+    private bool consumeResource(float modifier)
+    {        
+        float resourceRequested = resourceConsumption * modifier * TimeWarp.deltaTime;
+        if (CheatOptions.InfiniteRCS)
+            return true;
+        if (modifier > 0f)
         {
-            base.part.RequestResource(resourceName, resourceConsumption * modifier * Time.deltaTime);
+            if (base.part.RequestResource(resourceName, resourceRequested) > 0f)
+                return true;
         }
+        return false;
     }
 
     private float updateThruster(int fxNumber, bool doThrust, Transform t)
     {
-        Vector3 thrustDirection;
+        Vector3 thrustDirection;        
         float thrustModifier = 0f;
         if (doThrust)
         {
@@ -136,18 +151,15 @@ class KTvelocityController : PartModule
             thrustModifier = Vector3.Dot(thrustDirection, velocityDirection.normalized);
             if (thrustModifier > 0f && velocityDirection.magnitude > minVelocityToActivate)
             {
-                part.gameObject.rigidbody.AddForceAtPosition(-thrustDirection * thrustModifier * maxThrust, t.transform.position);
+                finalThrust = -thrustDirection * thrustModifier * maxThrust;
+                //part.gameObject.rigidbody.AddForceAtPosition(-thrustDirection * thrustModifier * maxThrust, t.transform.position);
             }
             else
             {
                 thrustModifier = 0f;
             }
         }
-        if (useFX)
-        {
-            particleFX[fxNumber].pEmitter.minEmission = defaultEmitterMinEmission * thrustModifier;
-            particleFX[fxNumber].pEmitter.maxEmission = defaultEmitterMaxEmission * thrustModifier;
-        }
+        
         return thrustModifier;
     }
 }
